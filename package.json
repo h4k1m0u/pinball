@@ -1,5 +1,5 @@
 {
-  "name": "matter-projects",
+  "name": "matter-pinball",
   "version": "1.0.0",
   "description": "```bash npm install -g gulp-cli cd project npm init npm install --save-dev gulp ```",
   "main": "src/app.js",
