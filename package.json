@@ -1,0 +1,29 @@
+{
+  "name": "matter-projects",
+  "version": "1.0.0",
+  "description": "```bash npm install -g gulp-cli cd project npm init npm install --save-dev gulp ```",
+  "main": "src/app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "h4k1m0u",
+  "license": "MIT",
+  "dependencies": {
+    "matter-js": "^0.14.2",
+    "p5": "^1.1.9"
+  },
+  "devDependencies": {
+    "@rollup/plugin-commonjs": "^13.0.0",
+    "@rollup/plugin-node-resolve": "^8.1.0",
+    "browser-sync": "^2.26.7",
+    "del": "^5.1.0",
+    "eslint": "^7.4.0",
+    "eslint-config-airbnb-base": "^14.2.0",
+    "eslint-plugin-import": "^2.22.0",
+    "gulp": "^4.0.2",
+    "gulp-ejs": "^5.1.0",
+    "gulp-rename": "^2.0.0",
+    "gulp-sass": "^4.1.0",
+    "rollup": "^2.21.0"
+  }
+}
