@@ -1,14 +1,14 @@
-import { World, Bodies } from 'matter-js';
+import {
+  World, Bodies, Body, Vector,
+} from 'matter-js';
 
 class Ball {
-  constructor(p, engine, dims) {
+  constructor(p, engine, x, y, r) {
     this.p = p;
-    this.x = dims.x;
-    this.y = dims.y;
-    this.r = dims.r;
+    this.r = r;
 
     // add circle body
-    this.body = Bodies.circle(this.x, this.y, this.r);
+    this.body = Bodies.circle(x, y, this.r);
     World.add(engine.world, this.body);
   }
 

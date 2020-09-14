@@ -1,27 +1,53 @@
-import { World, Bodies, Constraint } from 'matter-js';
+import {
+  World, Body, Bodies, Constraint, Vector,
+} from 'matter-js';
 
 class Flipper {
-  constructor(p, engine, dims) {
+  constructor(p, engine, canvas) {
+    const wallThickness = 20;
     this.p = p;
-    this.x = dims.x;
-    this.y = dims.y;
-    this.w = dims.w;
-    this.h = dims.h;
+    this.w = 100;
+    this.h = 10;
+    this.x = canvas.width / 2;
+    this.y = canvas.height - wallThickness - this.h / 2;
+    this.canvas = canvas;
 
-    // revolute joint
-    this.body = Bodies.rectangle(this.x, this.y, this.w, this.h);
-    const constraintFlipper = Constraint.create({
-      pointA: { x: 200, y: 200 },
-      bodyB: this.body,
-      length: 0,
-    });
-    World.add(engine.world, [this.body, constraintFlipper]);
+    // angle & center of rotation
+    this.angle = 0;
+    this.centerRotation = Vector.create(this.x - this.w / 2, this.y);
+
+    // rectangular body
+    this.body = Bodies.rectangle(this.x, this.y, this.w, this.h, { isStatic: true });
+    World.add(engine.world, this.body);
+  }
+
+  rotate(deltaAngle) {
+    // ccw rotation of body around rotation point
+    this.angle += deltaAngle;
+    Body.rotate(this.body, deltaAngle, this.centerRotation);
+  }
+
+  rotateLeft(deltaAngle) {
+    if (this.angle + deltaAngle > -Math.PI / 2) {
+      this.rotate(deltaAngle);
+    } else {
+      this.rotate(-Math.PI / 2 - this.angle);
+    }
+  }
+
+  rotateRight(deltaAngle) {
+    if (this.angle - deltaAngle < 0) {
+      this.rotate(-deltaAngle);
+    } else {
+      this.rotate(-this.angle);
+    }
   }
 
   draw() {
-    // circle follows position of physical body
-    const { position } = this.body;
-    this.p.rect(position.x, position.y, this.w, this.h);
+    // rectangle at position & angle of body
+    this.p.translate(this.centerRotation.x, this.centerRotation.y);
+    this.p.rotate(this.angle);
+    this.p.rect(this.w / 2, 0, this.w, this.h);
   }
 }
 
