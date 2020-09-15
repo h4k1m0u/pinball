@@ -6,48 +6,72 @@ class Flipper {
   constructor(p, engine, canvas) {
     const wallThickness = 20;
     this.p = p;
-    this.w = 100;
-    this.h = 10;
+    this.w = 250;
+    this.h = 20;
     this.x = canvas.width / 2;
     this.y = canvas.height - wallThickness - this.h / 2;
-    this.canvas = canvas;
 
-    // angle & center of rotation
-    this.angle = 0;
+    // center of rotation & min/max/step angles
     this.centerRotation = Vector.create(this.x - this.w / 2, this.y);
+    this.minAngle = this.p.radians(-40);
+    this.maxAngle = 0;
+    this.stepAngle = this.p.radians(-20);
 
-    // rectangular body
-    this.body = Bodies.rectangle(this.x, this.y, this.w, this.h, { isStatic: true });
+    // rectangular body for flipper
+    this.body = Bodies.rectangle(this.x, this.y, this.w, this.h);
     World.add(engine.world, this.body);
+
+    // constrain both end points of flipper on rotation
+    this.constrain(engine.world);
   }
 
-  rotate(deltaAngle) {
+  rotate() {
     // ccw rotation of body around rotation point
-    this.angle += deltaAngle;
-    Body.rotate(this.body, deltaAngle, this.centerRotation);
+    Body.rotate(this.body, this.stepAngle, this.centerRotation);
   }
 
-  rotateLeft(deltaAngle) {
-    if (this.angle + deltaAngle > -Math.PI / 2) {
-      this.rotate(deltaAngle);
-    } else {
-      this.rotate(-Math.PI / 2 - this.angle);
+  rotateLeft() {
+    if (Math.round(this.p.degrees(this.body.angle)) === 0
+        && this.body.angle + this.stepAngle > this.minAngle) {
+      this.rotate(this.stepAngle);
     }
   }
 
-  rotateRight(deltaAngle) {
-    if (this.angle - deltaAngle < 0) {
-      this.rotate(-deltaAngle);
-    } else {
-      this.rotate(-this.angle);
+  rotateRight() {
+    if (this.body.angle - this.stepAngle < this.maxAngle) {
+      this.rotate(-this.stepAngle);
     }
   }
 
   draw() {
     // rectangle at position & angle of body
     this.p.translate(this.centerRotation.x, this.centerRotation.y);
-    this.p.rotate(this.angle);
+    this.p.rotate(this.body.angle);
     this.p.rect(this.w / 2, 0, this.w, this.h);
+  }
+
+  constrain(world) {
+    // rigid constraint on flipper hinge (joint)
+    const restHinge = Vector.create(this.x - this.w / 2, this.y);
+    const elasticHinge = Constraint.create({
+      bodyA: this.body,
+      pointA: Vector.create(-this.w / 2, 0),
+      pointB: restHinge,
+      length: 0,
+    });
+    World.add(world, elasticHinge);
+
+    // elastic constraint on flipper end
+    const restEnd = Vector.create(this.x + this.w / 2, this.y);
+    const elasticEnd = Constraint.create({
+      bodyA: this.body,
+      pointA: Vector.create(this.w / 2, 0),
+      pointB: restEnd,
+      length: 0,
+      stiffness: 1e-3,
+      damping: 0.05,
+    });
+    World.add(world, [elasticHinge, elasticEnd]);
   }
 }
 

@@ -1,6 +1,6 @@
 // https://itnext.io/modular-game-worlds-in-phaser-3-tilemaps-4-meet-matter-js-abf4dfa65ca1
 import {
-  Engine, World, Bodies, Constraint, Render,
+  Engine, World, Bodies, Constraint, Render, Vector,
 } from 'matter-js';
 import p5 from 'p5';
 import Walls from './characters/walls';
@@ -17,7 +17,6 @@ let render = null;
 let [ball, walls] = [null, null];
 
 let flipper = null;
-const deltaAngle = -Math.PI / 18;
 
 // p5 in instance mode using closures
 const sketch = (p) => {
@@ -42,12 +41,12 @@ const sketch = (p) => {
       },
     });
 
-    // ball & flipper bodies
-    ball = new Ball(p, engine, 200, 100, 20);
-    flipper = new Flipper(p, engine, canvas);
-
-    // four walls bodies
+    // four boundary walls bodies
     walls = new Walls(p, engine, canvas, 20);
+
+    // ball & flipper bodies
+    ball = new Ball(p, engine, 280, 100, 10);
+    flipper = new Flipper(p, engine, canvas);
   };
 
   p.draw = () => {
@@ -66,10 +65,10 @@ const sketch = (p) => {
 
     // rotate flippers using arrow keys inside 1st quadrant
     if (p.keyIsDown(p.LEFT_ARROW)) {
-      flipper.rotateLeft(deltaAngle);
+      flipper.rotateLeft();
     }
     if (p.keyIsDown(p.RIGHT_ARROW)) {
-      flipper.rotateRight(deltaAngle);
+      flipper.rotateRight();
     }
   };
 };
