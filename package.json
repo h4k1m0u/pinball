@@ -1,5 +1,5 @@
 {
-  "name": "matter-pinball",
+  "name": "pinball",
   "version": "1.0.0",
   "description": "```bash npm install -g gulp-cli cd project npm init npm install --save-dev gulp ```",
   "main": "src/app.js",
@@ -9,8 +9,8 @@
   "author": "h4k1m0u",
   "license": "MIT",
   "dependencies": {
-    "matter-js": "^0.14.2",
-    "p5": "^1.1.9"
+    "p5": "^1.1.9",
+    "planck-js": "^0.3.22"
   },
   "devDependencies": {
     "@rollup/plugin-commonjs": "^13.0.0",

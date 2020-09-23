@@ -18,7 +18,7 @@ function clean() {
 function generateHTML() {
   // convert ejs templates to html using streams
   return src('src/views/main.ejs')
-    .pipe(ejs({ title: 'Pinball game made with p5.js and matter.js' }))
+    .pipe(ejs({ title: 'Pinball game made with p5.js and planck.js' }))
     .pipe(rename({ basename: 'index', extname: '.html' }))
     .pipe(dest('dist'))
     .on('end', sync.reload);

@@ -1,77 +1,103 @@
-import {
-  World, Body, Bodies, Constraint, Vector,
-} from 'matter-js';
+import planck from 'planck-js';
 
 class Flipper {
-  constructor(p, engine, canvas) {
-    const wallThickness = 20;
+  constructor(p, world, wallLeft, wallRight, canvas) {
+    const wallThickness = 10;
     this.p = p;
-    this.w = 250;
-    this.h = 20;
-    this.x = canvas.width / 2;
-    this.y = canvas.height - wallThickness - this.h / 2;
+    this.w = canvas.width / 6;
+    this.h = 10;
 
-    // center of rotation & min/max/step angles
-    this.centerRotation = Vector.create(this.x - this.w / 2, this.y);
-    this.minAngle = this.p.radians(-40);
-    this.maxAngle = 0;
-    this.stepAngle = this.p.radians(-20);
+    this.xLeft = canvas.width / 2 - this.w / 2;
+    this.yLeft = canvas.height - wallThickness - this.h / 2;
+    this.xRight = canvas.width / 2 + this.w / 2;
+    this.yRight = canvas.height - wallThickness - this.h / 2;
 
-    // rectangular body for flipper
-    this.body = Bodies.rectangle(this.x, this.y, this.w, this.h);
-    World.add(engine.world, this.body);
+    // rectangular body for left-flipper
+    this.bodyLeft = world.createDynamicBody({
+      position: planck.Vec2(this.xLeft, this.yLeft),
+    });
+    this.bodyLeft.createFixture(
+      planck.Box(
+        this.w / 2,
+        this.h / 2,
+      ),
+      1e-3,
+    );
 
-    // constrain both end points of flipper on rotation
-    this.constrain(engine.world);
-  }
+    // rectangular body for right-flipper
+    this.bodyRight = world.createDynamicBody({
+      position: planck.Vec2(this.xRight, this.yRight),
+    });
+    this.bodyRight.createFixture(
+      planck.Box(
+        this.w / 2,
+        this.h / 2,
+      ),
+      1e-3,
+    );
 
-  rotate() {
-    // ccw rotation of body around rotation point
-    Body.rotate(this.body, this.stepAngle, this.centerRotation);
-  }
+    // hinge joint at end of left-flipper
+    const optionsLeft = {
+      enableMotor: true,
+      motorSpeed: 0.0,
+      maxMotorTorque: 1e5,
+      enableLimit: true,
+      lowerAngle: -30 * (Math.PI / 180.0),
+      upperAngle: 0 * (Math.PI / 180.0),
+    };
+    this.centerRotationLeft = planck.Vec2(this.xLeft - this.w / 2, this.yLeft);
+    this.jointLeft = planck.RevoluteJoint(optionsLeft, wallLeft, this.bodyLeft,
+      this.centerRotationLeft);
+    world.createJoint(this.jointLeft);
 
-  rotateLeft() {
-    if (Math.round(this.p.degrees(this.body.angle)) === 0
-        && this.body.angle + this.stepAngle > this.minAngle) {
-      this.rotate(this.stepAngle);
-    }
-  }
-
-  rotateRight() {
-    if (this.body.angle - this.stepAngle < this.maxAngle) {
-      this.rotate(-this.stepAngle);
-    }
+    // hinge joint at end of right-flipper
+    const optionsRight = {
+      enableMotor: true,
+      motorSpeed: 0.0,
+      maxMotorTorque: 1e5,
+      enableLimit: true,
+      lowerAngle: 0 * (Math.PI / 180.0),
+      upperAngle: 30 * (Math.PI / 180.0),
+    };
+    this.centerRotationRight = planck.Vec2(this.xRight + this.w / 2, this.yRight);
+    this.jointRight = planck.RevoluteJoint(optionsRight, wallRight, this.bodyRight,
+      this.centerRotationRight);
+    world.createJoint(this.jointRight);
   }
 
   draw() {
-    // rectangle at position & angle of body
-    this.p.translate(this.centerRotation.x, this.centerRotation.y);
-    this.p.rotate(this.body.angle);
+    // rectangles at positions & angles of bodies
+    this.p.push();
+    this.p.fill('#00f');
+    this.p.translate(this.centerRotationLeft.x, this.centerRotationLeft.y);
+    this.p.rotate(this.bodyLeft.getAngle());
     this.p.rect(this.w / 2, 0, this.w, this.h);
+    this.p.pop();
+
+    this.p.push();
+    this.p.fill('#00f');
+    this.p.translate(this.centerRotationRight.x, this.centerRotationRight.y);
+    this.p.rotate(this.bodyRight.getAngle());
+    this.p.rect(-this.w / 2, 0, this.w, this.h);
+    this.p.pop();
   }
 
-  constrain(world) {
-    // rigid constraint on flipper hinge (joint)
-    const restHinge = Vector.create(this.x - this.w / 2, this.y);
-    const elasticHinge = Constraint.create({
-      bodyA: this.body,
-      pointA: Vector.create(-this.w / 2, 0),
-      pointB: restHinge,
-      length: 0,
-    });
-    World.add(world, elasticHinge);
+  rotateLeft() {
+    // sets motor speed in radians/second
+    this.jointLeft.setMotorSpeed(-2.0);
+  }
 
-    // elastic constraint on flipper end
-    const restEnd = Vector.create(this.x + this.w / 2, this.y);
-    const elasticEnd = Constraint.create({
-      bodyA: this.body,
-      pointA: Vector.create(this.w / 2, 0),
-      pointB: restEnd,
-      length: 0,
-      stiffness: 1e-3,
-      damping: 0.05,
-    });
-    World.add(world, [elasticHinge, elasticEnd]);
+  resetLeft() {
+    // reset angle on arrow keys release
+    this.jointLeft.setMotorSpeed(1.0);
+  }
+
+  rotateRight() {
+    this.jointRight.setMotorSpeed(2.0);
+  }
+
+  resetRight() {
+    this.jointRight.setMotorSpeed(-1.0);
   }
 }
 
