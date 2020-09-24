@@ -6,14 +6,15 @@ import Ball from './characters/ball';
 import Flipper from './characters/flipper';
 
 const FPS = 60;
+const THICKNESS = 10;
 const canvas = {
   width: 480,
   height: 480,
 };
 
 let world = null;
-let [ball, walls, flipper] = [null, null, null];
-let [ball1, ball2] = [null, null];
+let [walls, flipper] = [null, null];
+const balls = [];
 
 // p5 in instance mode using closures
 const sketch = (p) => {
@@ -30,14 +31,12 @@ const sketch = (p) => {
     });
 
     // four boundary walls bodies
-    walls = new Walls(p, world, canvas, 10);
-
-    // ball & flipper bodies
-    ball = new Ball(p, world, canvas.width / 2, 100, 3);
-    ball1 = new Ball(p, world, 100, 100, 10);
-    ball2 = new Ball(p, world, 400, 100, 10);
-    flipper = new Flipper(p, world, walls.wallBottomLeft, walls.wallBottomRight, canvas);
-    // constructor(p, world, wallLeft, wallRight, canvas) {
+    walls = new Walls(p, world, canvas);
+    flipper = new Flipper(p, world, walls.wallBottomLeft, walls.wallBottomRight, canvas,
+      {
+        width: canvas.width / 6,
+        height: 10,
+      });
   };
 
   p.draw = () => {
@@ -47,11 +46,19 @@ const sketch = (p) => {
     // draw characters on canvas
     p.background('#000');
     walls.draw();
-    ball.draw();
-    ball1.draw();
-    ball2.draw();
-
     flipper.draw();
+
+    // multiple ball at random position
+    if (p.frameCount % (FPS * 2) === 0) {
+      const x = p.int(p.random(canvas.width / 2 - 100, canvas.width / 2 + 100));
+      balls.push(new Ball(p, world, x, 10, 5));
+    }
+
+    if (balls.length > 0) {
+      balls.forEach((b) => {
+        b.draw();
+      });
+    }
 
     // rotate flippers using arrow keys
     if (p.keyIsDown(p.LEFT_ARROW)) {

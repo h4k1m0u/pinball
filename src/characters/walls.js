@@ -1,57 +1,79 @@
 import planck from 'planck-js';
+import constants from '../constants';
+
+const { THICKNESS, PX2M } = constants;
 
 class Walls {
-  constructor(p, world, canvas, thickness) {
+  constructor(p, world, canvas) {
     this.p = p;
-    this.thickness = thickness;
 
     // add four wall bodies (reference: center of rectangle)
+    const positionTop = planck.Vec2(
+      PX2M * (canvas.width / 2),
+      PX2M * (THICKNESS / 2),
+    );
     this.wallTop = world.createBody();
     this.wallTop.createFixture(
       planck.Box(
-        canvas.width / 2,
-        thickness / 2,
-        planck.Vec2(canvas.width / 2, thickness / 2),
+        PX2M * (canvas.width / 2),
+        PX2M * (THICKNESS / 2),
+        positionTop,
       ),
       0.0,
     );
 
+    const positionBottomLeft = planck.Vec2(
+      PX2M * (canvas.width / 6 - THICKNESS),
+      PX2M * (canvas.height - THICKNESS / 2),
+    );
     this.wallBottomLeft = world.createBody();
     this.wallBottomLeft.createFixture(
       planck.Box(
-        canvas.width / 6,
-        thickness / 2,
-        planck.Vec2(canvas.width / 6, canvas.height - thickness / 2),
+        PX2M * (canvas.width / 6 - THICKNESS),
+        PX2M * (THICKNESS / 2),
+        positionBottomLeft,
       ),
       0.0,
     );
 
+    const positionBottomRight = planck.Vec2(
+      PX2M * ((5 / 6) * canvas.width + THICKNESS),
+      PX2M * (canvas.height - THICKNESS / 2),
+    );
     this.wallBottomRight = world.createBody();
     this.wallBottomRight.createFixture(
       planck.Box(
-        canvas.width / 6,
-        thickness / 2,
-        planck.Vec2((5 / 6) * canvas.width, canvas.height - thickness / 2),
+        PX2M * (canvas.width / 6 - THICKNESS),
+        PX2M * (THICKNESS / 2),
+        positionBottomRight,
       ),
       0.0,
     );
 
+    const positionLeft = planck.Vec2(
+      PX2M * (THICKNESS / 2),
+      PX2M * (canvas.height / 2),
+    );
     this.wallLeft = world.createBody();
     this.wallLeft.createFixture(
       planck.Box(
-        thickness / 2,
-        canvas.height / 2,
-        planck.Vec2(thickness / 2, canvas.height / 2),
+        PX2M * (THICKNESS / 2),
+        PX2M * (canvas.height / 2),
+        positionLeft,
       ),
       0.0,
     );
 
+    const positionRight = planck.Vec2(
+      PX2M * (canvas.width - THICKNESS / 2),
+      PX2M * (canvas.height / 2),
+    );
     this.wallRight = world.createBody();
     this.wallRight.createFixture(
       planck.Box(
-        thickness / 2,
-        canvas.height / 2,
-        planck.Vec2(canvas.width - thickness / 2, canvas.height / 2),
+        PX2M * (THICKNESS / 2),
+        PX2M * (canvas.height / 2),
+        positionRight,
       ),
       0.0,
     );
@@ -68,15 +90,13 @@ class Walls {
     ].forEach((wall) => {
       const shape = wall.getFixtureList().getShape();
       const vertices = shape.m_vertices;
-      const centroid = shape.m_centroid;
 
-      // this.p.translate(centroid.x, centroid.y);
+      // convert back from meter to pixels
       this.p.beginShape();
-      this.p.vertex(vertices[0].x, vertices[0].y);
-      this.p.vertex(vertices[1].x, vertices[1].y);
-      this.p.vertex(vertices[2].x, vertices[2].y);
-      this.p.vertex(vertices[3].x, vertices[3].y);
-      this.p.vertex(vertices[0].x, vertices[0].y);
+      this.p.vertex((1 / PX2M) * vertices[0].x, (1 / PX2M) * vertices[0].y);
+      this.p.vertex((1 / PX2M) * vertices[1].x, (1 / PX2M) * vertices[1].y);
+      this.p.vertex((1 / PX2M) * vertices[2].x, (1 / PX2M) * vertices[2].y);
+      this.p.vertex((1 / PX2M) * vertices[3].x, (1 / PX2M) * vertices[3].y);
       this.p.endShape(this.p.CLOSE);
     });
   }
