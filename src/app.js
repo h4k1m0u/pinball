@@ -14,7 +14,8 @@ const canvas = {
 };
 
 let world = null;
-let [ball, walls, flipper] = [null, null];
+let [walls, flipper] = [null, null];
+// let ball = null;
 let bumpers = [];
 const balls = [];
 
@@ -37,35 +38,44 @@ const sketch = (p) => {
     flipper = new Flipper(p, world, walls.wallBottomLeft, walls.wallBottomRight, canvas);
 
     // multiple balls at random position
-    ball = new Ball(p, world, 200, 10);
+    // ball = new Ball(p, world, 200, 10);
 
     // top & bottom rows of bumers
     bumpers = [
       // top row
-      new Bumper(p, world, 100, 100),
-      new Bumper(p, world, 240, 100),
-      new Bumper(p, world, 380, 100),
+      new Bumper(p, world, 100, 100, 'bumper-0'),
+      new Bumper(p, world, 240, 100, 'bumper-1'),
+      new Bumper(p, world, 380, 100, 'bumper-2'),
 
-      new Bumper(p, world, 170, 180),
-      new Bumper(p, world, 310, 180),
+      new Bumper(p, world, 170, 180, 'bumper-3'),
+      new Bumper(p, world, 310, 180, 'bumper-4'),
     ];
 
     // collision between balls and bumpers
     world.on('post-solve', (contact) => {
-      const fA = contact.getFixtureA();
-      const fB = contact.getFixtureB();
-      const labelA = fA.getUserData();
-      const labelB = fB.getUserData();
+      const fixtureA = contact.getFixtureA();
+      const fixtureB = contact.getFixtureB();
+      const labelA = fixtureA.getUserData();
+      const labelB = fixtureB.getUserData();
+      const fixtureBall = (labelA.startsWith('ball') && fixtureA) || (labelB.startsWith('ball') && fixtureB);
+      const fixtureBumper = (labelA.startsWith('bumper') && fixtureA) || (labelB.startsWith('bumper') && fixtureB);
 
-      // blink bumper color on next 'step' (frame)
-      if ((labelA === 'bumper' && labelB === 'ball') || (labelA === 'ball' && labelB === 'bumper')) {
-        bumpers.forEach((bumper) => {
-          bumper.color = '#f00';
-        });
-      } else {
-        bumpers.forEach((bumper) => {
+      if (fixtureBall && fixtureBumper) {
+        const labelBall = fixtureBall.getUserData();
+        const labelBumper = fixtureBumper.getUserData();
+        const iBall = labelBall.slice(5);
+        const iBumper = labelBumper.slice(7);
+        const ball = balls[p.int(iBall)];
+        const bumper = bumpers[p.int(iBumper)];
+
+        // flash bumpers color on collision
+        bumper.color = '#f00';
+        setTimeout(() => {
           bumper.color = '#0f0';
-        });
+        }, 100);
+
+        // limit ball speed
+        ball.limitSpeed();
       }
     });
   };
@@ -83,7 +93,8 @@ const sketch = (p) => {
     // multiple ball at random position
     if (p.frameCount % (FPS * 2) === 0) {
       const x = p.int(p.random(canvas.width / 2 - 100, canvas.width / 2 + 100));
-      balls.push(new Ball(p, world, x, 10, 5));
+      const label = `ball-${balls.length}`;
+      balls.push(new Ball(p, world, x, 20, label));
     }
 
     if (balls.length > 0) {

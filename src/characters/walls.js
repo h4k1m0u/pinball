@@ -22,6 +22,7 @@ class Walls {
       {
         density: 1.0,
         friction: 0.0,
+        userData: 'wall-top',
       },
     );
 
@@ -39,6 +40,7 @@ class Walls {
       {
         density: 1.0,
         friction: 0.0,
+        userData: 'wall-bottom-left',
       },
     );
 
@@ -56,6 +58,7 @@ class Walls {
       {
         density: 1.0,
         friction: 0.0,
+        userData: 'wall-bottom-right',
       },
     );
 
@@ -73,6 +76,7 @@ class Walls {
       {
         density: 1.0,
         friction: 0.0,
+        userData: 'wall-left',
       },
     );
 
@@ -90,6 +94,7 @@ class Walls {
       {
         density: 1.0,
         friction: 0.0,
+        userData: 'wall-right',
       },
     );
   }

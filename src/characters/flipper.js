@@ -23,7 +23,10 @@ class Flipper {
         PX2M * (this.w / 2),
         PX2M * (this.h / 2),
       ),
-      1.0,
+      {
+        density: 1.0,
+        userData: 'flipper-left',
+      },
     );
 
     // rectangular body for right-flipper
@@ -35,7 +38,10 @@ class Flipper {
         PX2M * (this.w / 2),
         PX2M * (this.h / 2),
       ),
-      1.0,
+      {
+        density: 1.0,
+        userData: 'flipper-right',
+      },
     );
 
     // hinge joint at end of left-flipper

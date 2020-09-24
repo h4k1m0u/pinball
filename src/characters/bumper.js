@@ -4,14 +4,14 @@ import constants from '../constants';
 const { PX2M } = constants;
 
 class Bumper {
-  constructor(p, world, x, y) {
+  constructor(p, world, x, y, label) {
     this.p = p;
     this.x = x;
     this.y = y;
     this.r = 25;
     this.color = '#0f0';
 
-    // static bumper
+    // static bumper (resitution makes ball bounce)
     this.body = world.createBody({
       type: 'static',
       position: planck.Vec2(PX2M * x, PX2M * y),
@@ -21,7 +21,8 @@ class Bumper {
       {
         density: 1.0,
         friction: 0.0,
-        userData: 'bumper',
+        userData: label,
+        restitution: 1.0,
       },
     );
   }

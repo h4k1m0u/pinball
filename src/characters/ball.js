@@ -2,9 +2,10 @@ import planck from 'planck-js';
 import constants from '../constants';
 
 const { PX2M } = constants;
+const SPEED_MAX = 3.0;
 
 class Ball {
-  constructor(p, world, x, y) {
+  constructor(p, world, x, y, label) {
     this.p = p;
     this.r = 5;
 
@@ -18,7 +19,7 @@ class Ball {
       {
         density: 1.0,
         restitution: 0.1,
-        userData: 'ball',
+        userData: label,
       },
     );
   }
@@ -36,6 +37,17 @@ class Ball {
     this.p.fill('#f00');
     this.p.circle(positionPixel.x, positionPixel.y, this.r * 2);
     this.p.pop();
+  }
+
+  limitSpeed() {
+    // limit ball speed when hitting bumper
+    const speedCurrent = this.body.getLinearVelocity();
+    const speedClamped = planck.Vec2(
+      Math.max(Math.min(speedCurrent.x, SPEED_MAX), -SPEED_MAX),
+      Math.max(Math.min(speedCurrent.y, SPEED_MAX), -SPEED_MAX),
+    );
+
+    this.body.setLinearVelocity(speedClamped);
   }
 }
 
