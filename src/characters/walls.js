@@ -12,70 +12,85 @@ class Walls {
       PX2M * (canvas.width / 2),
       PX2M * (THICKNESS / 2),
     );
-    this.wallTop = world.createBody();
+    this.wallTop = world.createBody({ type: 'static' });
     this.wallTop.createFixture(
       planck.Box(
         PX2M * (canvas.width / 2),
         PX2M * (THICKNESS / 2),
         positionTop,
       ),
-      0.0,
+      {
+        density: 1.0,
+        friction: 0.0,
+      },
     );
 
     const positionBottomLeft = planck.Vec2(
       PX2M * (canvas.width / 6 - THICKNESS),
       PX2M * (canvas.height - THICKNESS / 2),
     );
-    this.wallBottomLeft = world.createBody();
+    this.wallBottomLeft = world.createBody({ type: 'static' });
     this.wallBottomLeft.createFixture(
       planck.Box(
         PX2M * (canvas.width / 6 - THICKNESS),
         PX2M * (THICKNESS / 2),
         positionBottomLeft,
       ),
-      0.0,
+      {
+        density: 1.0,
+        friction: 0.0,
+      },
     );
 
     const positionBottomRight = planck.Vec2(
       PX2M * ((5 / 6) * canvas.width + THICKNESS),
       PX2M * (canvas.height - THICKNESS / 2),
     );
-    this.wallBottomRight = world.createBody();
+    this.wallBottomRight = world.createBody({ type: 'static' });
     this.wallBottomRight.createFixture(
       planck.Box(
         PX2M * (canvas.width / 6 - THICKNESS),
         PX2M * (THICKNESS / 2),
         positionBottomRight,
       ),
-      0.0,
+      {
+        density: 1.0,
+        friction: 0.0,
+      },
     );
 
     const positionLeft = planck.Vec2(
       PX2M * (THICKNESS / 2),
       PX2M * (canvas.height / 2),
     );
-    this.wallLeft = world.createBody();
+    this.wallLeft = world.createBody({ type: 'static' });
     this.wallLeft.createFixture(
       planck.Box(
         PX2M * (THICKNESS / 2),
         PX2M * (canvas.height / 2),
         positionLeft,
       ),
-      0.0,
+      {
+        density: 1.0,
+        friction: 0.0,
+      },
     );
 
     const positionRight = planck.Vec2(
       PX2M * (canvas.width - THICKNESS / 2),
       PX2M * (canvas.height / 2),
     );
-    this.wallRight = world.createBody();
+    this.wallRight = world.createBody({ type: 'static' });
     this.wallRight.createFixture(
       planck.Box(
         PX2M * (THICKNESS / 2),
         PX2M * (canvas.height / 2),
         positionRight,
       ),
-      0.0,
+      {
+        density: 1.0,
+        friction: 0.0,
+      },
     );
   }
 

@@ -4,6 +4,7 @@ import planck from 'planck-js';
 import Walls from './characters/walls';
 import Ball from './characters/ball';
 import Flipper from './characters/flipper';
+import Bumper from './characters/bumper';
 
 const FPS = 60;
 const THICKNESS = 10;
@@ -13,7 +14,8 @@ const canvas = {
 };
 
 let world = null;
-let [walls, flipper] = [null, null];
+let [ball, walls, flipper] = [null, null];
+let bumpers = [];
 const balls = [];
 
 // p5 in instance mode using closures
@@ -32,11 +34,40 @@ const sketch = (p) => {
 
     // four boundary walls bodies
     walls = new Walls(p, world, canvas);
-    flipper = new Flipper(p, world, walls.wallBottomLeft, walls.wallBottomRight, canvas,
-      {
-        width: canvas.width / 6,
-        height: 10,
-      });
+    flipper = new Flipper(p, world, walls.wallBottomLeft, walls.wallBottomRight, canvas);
+
+    // multiple balls at random position
+    ball = new Ball(p, world, 200, 10);
+
+    // top & bottom rows of bumers
+    bumpers = [
+      // top row
+      new Bumper(p, world, 100, 100),
+      new Bumper(p, world, 240, 100),
+      new Bumper(p, world, 380, 100),
+
+      new Bumper(p, world, 170, 180),
+      new Bumper(p, world, 310, 180),
+    ];
+
+    // collision between balls and bumpers
+    world.on('post-solve', (contact) => {
+      const fA = contact.getFixtureA();
+      const fB = contact.getFixtureB();
+      const labelA = fA.getUserData();
+      const labelB = fB.getUserData();
+
+      // blink bumper color on next 'step' (frame)
+      if ((labelA === 'bumper' && labelB === 'ball') || (labelA === 'ball' && labelB === 'bumper')) {
+        bumpers.forEach((bumper) => {
+          bumper.color = '#f00';
+        });
+      } else {
+        bumpers.forEach((bumper) => {
+          bumper.color = '#0f0';
+        });
+      }
+    });
   };
 
   p.draw = () => {
@@ -47,6 +78,7 @@ const sketch = (p) => {
     p.background('#000');
     walls.draw();
     flipper.draw();
+    // ball.draw();
 
     // multiple ball at random position
     if (p.frameCount % (FPS * 2) === 0) {
@@ -59,6 +91,11 @@ const sketch = (p) => {
         b.draw();
       });
     }
+
+    // bumpers
+    bumpers.forEach((bumper) => {
+      bumper.draw();
+    });
 
     // rotate flippers using arrow keys
     if (p.keyIsDown(p.LEFT_ARROW)) {

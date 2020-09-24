@@ -3,22 +3,25 @@ import constants from '../constants';
 
 const { PX2M } = constants;
 
-class Ball {
+class Bumper {
   constructor(p, world, x, y) {
     this.p = p;
-    this.r = 5;
+    this.x = x;
+    this.y = y;
+    this.r = 25;
+    this.color = '#0f0';
 
-    // bouncing circle body
-    this.body = world.createDynamicBody({
+    // static bumper
+    this.body = world.createBody({
+      type: 'static',
       position: planck.Vec2(PX2M * x, PX2M * y),
-      bullet: true,
     });
     this.body.createFixture(
       planck.Circle(PX2M * this.r),
       {
         density: 1.0,
-        restitution: 0.1,
-        userData: 'ball',
+        friction: 0.0,
+        userData: 'bumper',
       },
     );
   }
@@ -33,10 +36,15 @@ class Ball {
 
     // circle at position of body
     this.p.push();
-    this.p.fill('#f00');
+    this.p.fill(this.color);
     this.p.circle(positionPixel.x, positionPixel.y, this.r * 2);
     this.p.pop();
   }
+
+  collide() {
+    // change bumper color when hit by ball
+    this.color = '#f00';
+  }
 }
 
-export default Ball;
+export default Bumper;

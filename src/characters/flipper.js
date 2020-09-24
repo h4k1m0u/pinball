@@ -4,10 +4,10 @@ import constants from '../constants';
 const { THICKNESS, PX2M } = constants;
 
 class Flipper {
-  constructor(p, world, wallLeft, wallRight, canvas, options) {
+  constructor(p, world, wallLeft, wallRight, canvas) {
     this.p = p;
-    this.w = options.width;
-    this.h = options.height;
+    this.w = canvas.width / 6;
+    this.h = 10;
 
     this.xLeft = canvas.width / 2 - this.w / 2 - THICKNESS;
     this.yLeft = canvas.height - THICKNESS - this.h / 2;
