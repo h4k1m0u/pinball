@@ -15,13 +15,12 @@ class Flipper {
     this.yRight = canvas.height - this.h / 2;
 
     // rectangular body for left-flipper
-    this.bodyLeft = world.createDynamicBody({
-      position: planck.Vec2(PX2M * this.xLeft, PX2M * this.yLeft),
-    });
+    this.bodyLeft = world.createDynamicBody();
     this.bodyLeft.createFixture(
       planck.Box(
         PX2M * (this.w / 2),
         PX2M * (this.h / 2),
+        planck.Vec2(PX2M * this.xLeft, PX2M * this.yLeft),
       ),
       {
         density: 1.0,
@@ -30,13 +29,12 @@ class Flipper {
     );
 
     // rectangular body for right-flipper
-    this.bodyRight = world.createDynamicBody({
-      position: planck.Vec2(PX2M * this.xRight, PX2M * this.yRight),
-    });
+    this.bodyRight = world.createDynamicBody();
     this.bodyRight.createFixture(
       planck.Box(
         PX2M * (this.w / 2),
         PX2M * (this.h / 2),
+        planck.Vec2(PX2M * this.xRight, PX2M * this.yRight),
       ),
       {
         density: 1.0,

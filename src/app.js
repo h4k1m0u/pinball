@@ -7,7 +7,6 @@ import Flipper from './characters/flipper';
 import Bumper from './characters/bumper';
 
 const FPS = 60;
-const THICKNESS = 10;
 const canvas = {
   width: 480,
   height: 480,
@@ -17,6 +16,10 @@ let world = null;
 let [ball, walls, flipper] = [null, null, null];
 let bumpers = [];
 
+let score = 0;
+let elementScore = null;
+let isPaused = false;
+
 // p5 in instance mode using closures
 const sketch = (p) => {
   p.setup = () => {
@@ -25,6 +28,9 @@ const sketch = (p) => {
     p.rectMode(p.CENTER);
     p.angleMode(p.RADIANS);
     p.frameRate(FPS);
+
+    // score html element below canvas
+    elementScore = p.createDiv('<b>Score:</b> 0');
 
     // set gravity
     world = new planck.World({
@@ -59,10 +65,13 @@ const sketch = (p) => {
         const iBumper = labelBumper.slice(7);
         const bumper = bumpers[p.int(iBumper)];
 
-        // flash bumpers color on collision
+        // flash bumpers color on collision & update score
         bumper.color = '#f00';
         setTimeout(() => {
           bumper.color = '#0f0';
+
+          score += 1;
+          elementScore.html(`<b>Score:</b> ${score}`);
         }, 100);
 
         // limit ball speed
@@ -72,6 +81,10 @@ const sketch = (p) => {
   };
 
   p.draw = () => {
+    if (isPaused) {
+      return;
+    }
+
     // run physical engine
     world.step(1 / FPS);
 
@@ -86,7 +99,7 @@ const sketch = (p) => {
       bumper.draw();
     });
 
-    // rotate flippers using arrow keys
+    // rotate flippers with arrow keys (key press below needs multiple presses)
     if (p.keyIsDown(p.LEFT_ARROW)) {
       flipper.rotateLeft();
     } else {
@@ -97,6 +110,17 @@ const sketch = (p) => {
       flipper.rotateRight();
     } else {
       flipper.resetRight();
+    }
+  };
+
+  p.keyPressed = () => {
+    // pause game
+    switch (p.keyCode) {
+      case p.ENTER:
+        isPaused = !isPaused;
+        break;
+      default:
+        break;
     }
   };
 };
