@@ -5,7 +5,7 @@ const { PX2M } = constants;
 const SPEED_MAX = 3.0;
 
 class Ball {
-  constructor(p, world, x, y, label) {
+  constructor(p, world, x, y) {
     this.p = p;
     this.r = 5;
 
@@ -19,7 +19,7 @@ class Ball {
       {
         density: 1.0,
         restitution: 0.1,
-        userData: label,
+        userData: 'ball',
       },
     );
   }

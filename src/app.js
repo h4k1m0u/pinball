@@ -14,16 +14,14 @@ const canvas = {
 };
 
 let world = null;
-let [walls, flipper] = [null, null];
-// let ball = null;
+let [ball, walls, flipper] = [null, null, null];
 let bumpers = [];
-const balls = [];
 
 // p5 in instance mode using closures
 const sketch = (p) => {
   p.setup = () => {
     // draw rect bodies from center
-    p.createCanvas(canvas.width, canvas.height);
+    p.createCanvas(canvas.width, canvas.height + 20);
     p.rectMode(p.CENTER);
     p.angleMode(p.RADIANS);
     p.frameRate(FPS);
@@ -36,9 +34,7 @@ const sketch = (p) => {
     // four boundary walls bodies
     walls = new Walls(p, world, canvas);
     flipper = new Flipper(p, world, walls.wallBottomLeft, walls.wallBottomRight, canvas);
-
-    // multiple balls at random position
-    // ball = new Ball(p, world, 200, 10);
+    ball = new Ball(p, world, 200, 10);
 
     // top & bottom rows of bumers
     bumpers = [
@@ -51,21 +47,16 @@ const sketch = (p) => {
       new Bumper(p, world, 310, 180, 'bumper-4'),
     ];
 
-    // collision between balls and bumpers
+    // collision between ball and bumpers
     world.on('post-solve', (contact) => {
-      const fixtureA = contact.getFixtureA();
-      const fixtureB = contact.getFixtureB();
-      const labelA = fixtureA.getUserData();
-      const labelB = fixtureB.getUserData();
-      const fixtureBall = (labelA.startsWith('ball') && fixtureA) || (labelB.startsWith('ball') && fixtureB);
+      const [fixtureA, fixtureB] = [contact.getFixtureA(), contact.getFixtureB()];
+      const [labelA, labelB] = [fixtureA.getUserData(), fixtureB.getUserData()];
+      const fixtureBall = (labelA === 'ball' && fixtureA) || (labelB === 'ball' && fixtureB);
       const fixtureBumper = (labelA.startsWith('bumper') && fixtureA) || (labelB.startsWith('bumper') && fixtureB);
 
       if (fixtureBall && fixtureBumper) {
-        const labelBall = fixtureBall.getUserData();
         const labelBumper = fixtureBumper.getUserData();
-        const iBall = labelBall.slice(5);
         const iBumper = labelBumper.slice(7);
-        const ball = balls[p.int(iBall)];
         const bumper = bumpers[p.int(iBumper)];
 
         // flash bumpers color on collision
@@ -88,20 +79,7 @@ const sketch = (p) => {
     p.background('#000');
     walls.draw();
     flipper.draw();
-    // ball.draw();
-
-    // multiple ball at random position
-    if (p.frameCount % (FPS * 2) === 0) {
-      const x = p.int(p.random(canvas.width / 2 - 100, canvas.width / 2 + 100));
-      const label = `ball-${balls.length}`;
-      balls.push(new Ball(p, world, x, 20, label));
-    }
-
-    if (balls.length > 0) {
-      balls.forEach((b) => {
-        b.draw();
-      });
-    }
+    ball.draw();
 
     // bumpers
     bumpers.forEach((bumper) => {

@@ -6,13 +6,13 @@ const { THICKNESS, PX2M } = constants;
 class Flipper {
   constructor(p, world, wallLeft, wallRight, canvas) {
     this.p = p;
-    this.w = canvas.width / 6;
-    this.h = 10;
+    this.w = canvas.width / 6 - THICKNESS;
+    this.h = THICKNESS;
 
     this.xLeft = canvas.width / 2 - this.w / 2 - THICKNESS;
-    this.yLeft = canvas.height - THICKNESS - this.h / 2;
+    this.yLeft = canvas.height - this.h / 2;
     this.xRight = canvas.width / 2 + this.w / 2 + THICKNESS;
-    this.yRight = canvas.height - THICKNESS - this.h / 2;
+    this.yRight = canvas.height - this.h / 2;
 
     // rectangular body for left-flipper
     this.bodyLeft = world.createDynamicBody({
